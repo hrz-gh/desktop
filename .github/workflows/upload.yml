@@ -1,0 +1,50 @@
+name: AutoUpdate
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          repository: hrz-gh/desktop
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.21.3
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Build
+        run: |
+          git config --global core.quotepath false
+          git ls-files | while read file; do touch -d $(git log -1 --format="@%ct" "$file") "$file"; done
+          python3 generate.py
+          npm install
+          npm run build
+      - name: Commit files
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action[Bot]"
+          git add -A
+          git commit -m "update built files after user commit"
+          git checkout gitee
+          git merge main
+          git checkout main
+      - name: Push main
+        uses: ad-m/github-push-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push gitee
+        uses: ad-m/github-push-action@gitee
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
