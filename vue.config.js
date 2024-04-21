@@ -1,1 +1,0 @@
-./config/vue.gh-config.js
