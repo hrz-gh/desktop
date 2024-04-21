@@ -2,7 +2,7 @@ module.exports = {
   transpileDependencies: [
     'vuetify'
   ],
-  publicPath: 'https://hrz-gh.github.io/desktop/docs/',
+  publicPath: 'https://mostiray.gitee.io/desktop/docs/',
   outputDir: './docs',
   devServer:{
     host:'0.0.0.0',
